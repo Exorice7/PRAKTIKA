@@ -1,0 +1,1595 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дмитрий Прытков | Backend Architect</title>
+    
+    <!-- Fonts: Playfair Display (Luxury) & Inter (Clean) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- PALETTE: COFFEE & LUXURY --- */
+        :root {
+            --bg-main: #EBE7E0;           /* Молочная пенка */
+            --bg-surface: #E3DED5;        /* Чуть темнее */
+            --text-primary: #2C241F;      /* Эспрессо */
+            --text-secondary: #8A7F75;    /* Капучино */
+            --accent: #D46A35;            /* Карамель */
+            --border: #D3CEC5;            /* Линии */
+            --cursor-color: #2C241F;
+        }
+
+        html.lenis, html.lenis body { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+
+        /* --- Scrollbar & Selection --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--text-secondary); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+        ::selection { background: var(--accent); color: #fff; }
+        .lenis.lenis-stopped { overflow: hidden; }
+        .lenis.lenis-scrolling iframe { pointer-events: none; }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+        }
+
+        /* --- Preloader --- */
+        #preloader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--text-primary);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+        }
+        
+        .preloader-counter {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            color: var(--bg-main);
+            font-weight: 700;
+            font-style: italic;
+        }
+
+        .preloader-text {
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+
+        body.loaded #preloader { transform: translateY(-100%); }
+
+        /* --- Texture --- */
+        .noise-overlay {
+            position: fixed;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            pointer-events: none;
+            z-index: 9000;
+            opacity: 0.05; /* Немного уменьшил для комфорта глаз */
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJnoiPjxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjY1IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI2cpIiBvcGFjaXR5PSIxIi8+PC9zdmc+');
+            animation: noise-move 0.2s infinite;
+        }
+
+        @keyframes noise-move {
+            0% { transform: translate(0, 0); }
+            10% { transform: translate(-5%, -5%); }
+            20% { transform: translate(-10%, 5%); }
+            30% { transform: translate(5%, -10%); }
+            40% { transform: translate(-5%, 15%); }
+            50% { transform: translate(-10%, 5%); }
+            60% { transform: translate(15%, 0); }
+            70% { transform: translate(0, 10%); }
+            80% { transform: translate(-15%, 0); }
+            90% { transform: translate(10%, 5%); }
+            100% { transform: translate(5%, 0); }
+        }
+
+        /* --- Custom Cursor --- */
+        .cursor-dot {
+            width: 6px; height: 6px;
+            background-color: var(--cursor-color);
+            position: fixed; top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999; pointer-events: none;
+        }
+
+        .cursor-outline {
+            width: 30px; height: 30px;
+            border: 1px solid rgba(44, 36, 31, 0.3);
+            position: fixed; top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9998; pointer-events: none;
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        body.hovering .cursor-outline {
+            width: 60px; height: 60px;
+            background-color: rgba(212, 106, 53, 0.1);
+            border-color: transparent;
+            backdrop-filter: blur(2px);
+        }
+
+        /* --- Typography --- */
+        h1, h2, h3, h4, .navbar-brand, .display-1, .serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .display-1 {
+            font-style: italic;
+            font-weight: 600;
+            font-size: clamp(3.5rem, 9vw, 7.5rem);
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+        }
+        
+        .display-1 span { font-weight: 400; color: var(--accent); }
+
+        .section-header {
+            margin-bottom: 60px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 4vw, 4rem);
+            font-style: italic;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        /* --- Components --- */
+        .navbar {
+            padding: 25px 0;
+            transition: 0.3s;
+        }
+        .navbar.scrolled {
+            background: rgba(235, 231, 224, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 0;
+        }
+
+        .navbar-brand { font-weight: 800; font-size: 1.5rem; letter-spacing: -1px; color: var(--text-primary); }
+        
+        .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.85rem;
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            padding: 0;
+        }
+        
+        /* Rolling Text Effect */
+        .nav-link span {
+            display: block;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav-link::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .nav-link:hover span {
+            transform: translateY(-100%);
+        }
+        .nav-link:hover::after {
+            transform: translateY(-100%);
+        }
+
+        .btn-glow {
+            background: var(--text-primary);
+            color: var(--bg-main);
+            padding: 18px 40px;
+            border-radius: 100px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-flex; align-items: center; gap: 10px;
+            transition: 0.4s; border: none;
+        }
+        .btn-glow:hover {
+            background: var(--accent);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .btn-outline-custom {
+            border: 1px solid var(--text-primary);
+            color: var(--text-primary);
+            background: transparent;
+            border-radius: 100px;
+            padding: 18px 40px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .btn-outline-custom:hover {
+            background: var(--text-primary);
+            color: var(--bg-main);
+        }
+
+        /* --- Hero Images --- */
+        .hero-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-img-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            border-radius: 20px;
+            overflow: hidden;
+            /* Arch Shape */
+            clip-path: inset(0 0 0 0 round 300px 300px 20px 20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .hero-img-container img {
+            width: 100%; height: 110%;
+            object-fit: cover;
+            filter: sepia(10%) contrast(95%) grayscale(20%);
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s;
+            will-change: transform;
+        }
+        .hero-img-container:hover img {
+            filter: sepia(0%) contrast(100%) grayscale(0%);
+            transform: scale(1.05);
+        }
+        
+        /* Magnetic Effect Class */
+        .magnetic-wrap {
+            display: inline-block;
+            position: relative;
+        }
+        .magnetic-area {
+            position: absolute;
+            top: -20px; left: -20px; right: -20px; bottom: -20px;
+            z-index: 10;
+        }
+
+        /* Hero Typography overrides */
+        .display-1 {
+            font-size: clamp(4rem, 11vw, 8.5rem);
+            line-height: 0.9;
+            margin-bottom: 30px;
+        }
+        .display-1 .highlight {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-style: normal;
+            font-size: 0.6em;
+            vertical-align: middle;
+            border: 1px solid var(--text-primary);
+            padding: 5px 20px;
+            border-radius: 100px;
+            margin: 0 10px;
+            position: relative;
+            top: -10px;
+        }
+
+        /* --- Bento Grid (Ultra Premium CSS Awards) --- */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            perspective: 1000px;
+        }
+        @media(min-width: 992px) {
+            .bento-grid {
+                grid-template-columns: repeat(12, 1fr);
+                grid-template-rows: repeat(2, minmax(320px, auto));
+            }
+            .span-video { grid-column: span 6; grid-row: span 2; }
+            .span-card { grid-column: span 3; }
+            .span-wide { grid-column: span 6; }
+        }
+
+        .bento-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-top: 1px solid rgba(255, 255, 255, 0.8);
+            border-left: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 30px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between;
+            box-shadow: 
+                0 20px 40px -10px rgba(0,0,0,0.1),
+                inset 0 0 0 1px rgba(255,255,255, 0.2);
+            transition: transform 0.1s;
+            transform-style: preserve-3d;
+        }
+
+        /* Shine Effect */
+        .card-shine {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(
+                125deg,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0) 40%,
+                rgba(255,255,255,0.6) 47%,
+                rgba(255,255,255,0) 50%,
+                rgba(255,255,255,0) 100%
+            );
+            transform: translateX(-100%);
+            transition: 0.6s;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .bento-card:hover .card-shine {
+            transition: 0.8s ease-in-out;
+            transform: translateX(100%);
+        }
+
+        .icon-box {
+            width: 70px; height: 70px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.4));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 25px;
+            box-shadow: 0 15px 30px -10px rgba(212, 106, 53, 0.3);
+            transform: translateZ(30px);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .bento-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            transform: translateZ(40px);
+        }
+        
+        .bento-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            transform: translateZ(20px);
+        }
+
+        .tech-pill {
+            background: rgba(255,255,255,0.25);
+            border: 1px solid rgba(255,255,255,0.5);
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 8px 12px 0;
+            backdrop-filter: blur(4px);
+            transition: 0.3s;
+            transform: translateZ(20px);
+        }
+        .tech-pill:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            transform: translateZ(30px) translateY(-3px);
+            box-shadow: 0 10px 20px rgba(212, 106, 53, 0.3);
+        }
+        
+        .video-wrapper {
+            width: 100%; height: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            transform: translateZ(0);
+            box-shadow: 0 20px 50px -20px rgba(0,0,0,0.3);
+        }
+        .video-wrapper iframe {
+            transition: 0.5s;
+            filter: grayscale(10%) sepia(5%);
+        }
+        .bento-card:hover .video-wrapper iframe {
+            filter: none;
+            transform: scale(1.02);
+        }
+
+        /* Ambient Blobs */
+        .ambient-blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.6;
+            animation: floatBlob 10s ease-in-out infinite alternate;
+        }
+        .blob-1 {
+            width: 400px; height: 400px;
+            background: rgba(212, 106, 53, 0.15);
+            top: 10%; left: -10%;
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        }
+        .blob-2 {
+            width: 300px; height: 300px;
+            background: rgba(44, 36, 31, 0.08);
+            bottom: 10%; right: -5%;
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            animation-delay: -5s;
+        }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(30px, 40px) rotate(10deg); }
+        }
+
+        /* --- Gallery --- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .gallery-card {
+            height: 450px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        .gallery-card img {
+            width: 100%; height: 115%;
+            object-fit: cover;
+            transition: 0.7s;
+            filter: sepia(10%);
+            will-change: transform;
+        }
+        .gallery-card:hover img {
+            transform: scale(1.05);
+            filter: sepia(0);
+        }
+
+        /* --- REVIEWS --- */
+        .review-quote {
+            font-family: 'Playfair Display'; font-style: italic; font-size: 1.8rem; line-height: 1.4; color: var(--text-primary); margin-bottom: 20px;
+        }
+        .review-author {
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 600;
+        }
+
+        /* --- FOOTER / CONTACT --- */
+        footer {
+            padding: 100px 0 50px;
+            border-top: 2px solid var(--text-primary);
+            margin-top: 100px;
+        }
+
+        .contact-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            line-height: 1;
+            margin-bottom: 60px;
+            color: var(--text-primary);
+        }
+        .contact-title i {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .form-coffee {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--text-secondary);
+            padding: 20px 0;
+            width: 100%;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 30px;
+            transition: 0.3s;
+        }
+        .form-coffee:focus {
+            outline: none;
+            border-color: var(--accent);
+            padding-left: 10px;
+        }
+        .form-coffee::placeholder {
+            color: rgba(44, 36, 31, 0.3);
+            font-style: italic;
+        }
+
+        .footer-info-label {
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+        
+        .footer-info-val {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 40px;
+        }
+
+        .footer-bottom {
+            margin-top: 100px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+            padding-top: 30px;
+            letter-spacing: 1px;
+        }
+
+        /* --- Animations --- */
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-up.active { opacity: 1; transform: translateY(0); }
+        
+        .word-reveal span {
+            display: inline-block;
+            transform: translateY(120%) rotate(5deg);
+            opacity: 0;
+            filter: blur(10px);
+            transition: all 1.2s cubic-bezier(0.2, 1, 0.3, 1);
+            transform-origin: top left;
+        }
+        .word-reveal.active span {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+            filter: blur(0);
+        }
+
+        /* --- HERO INTRO ANIMATION (Blur + Fade from Void) --- */
+        .hero-stagger {
+            opacity: 0;
+            filter: blur(20px);
+            transform: scale(0.92) translateY(30px);
+            transition: all 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform, filter;
+        }
+
+        body.loaded .hero-stagger {
+            opacity: 1;
+            filter: blur(0);
+            transform: scale(1) translateY(0);
+        }
+
+        /* Hero Title Words */
+        .hero-word span {
+            display: inline-block;
+            opacity: 0;
+            filter: blur(20px);
+            transform: translateY(50px) rotate(5deg) scale(0.9);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform, filter;
+        }
+        
+        body.loaded .hero-word span {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0) rotate(0) scale(1);
+        }
+
+        /* --- Footer Reveal Setup --- */
+        .main-content {
+            position: relative;
+            z-index: 2;
+            background: var(--bg-main);
+            border-radius: 0 0 60px 60px;
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.3);
+            will-change: margin-bottom;
+        }
+        
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1;
+        }
+    /* --- INNOVATION: HORIZONTAL FLOW --- */
+    .horizontal-section {
+        position: relative;
+        height: 400vh; /* Scroll distance */
+        background: var(--bg-main);
+    }
+
+    .pin-wrap {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+
+    .horizontal-track {
+        display: flex;
+        gap: 8vw;
+        padding-left: 10vw; /* Initial offset */
+        padding-right: 10vw;
+        width: max-content;
+        height: 70vh;
+        align-items: center;
+        will-change: transform;
+    }
+
+    /* Intro Item */
+    .horiz-item-intro {
+        width: 30vw;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Project Card */
+    .horiz-card {
+        width: 70vw;
+        height: 100%;
+        flex-shrink: 0;
+        background: var(--bg-surface);
+        border-radius: 40px;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        transition: transform 0.5s;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 20px 0 50px rgba(0,0,0,0.05);
+    }
+
+    /* Internal layout of card */
+    .horiz-card-body {
+        width: 40%;
+        padding: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .horiz-card-visual {
+        width: 60%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    .horiz-card-img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        transition: transform 1s;
+    }
+    .horiz-card:hover .horiz-card-img {
+        transform: scale(1.05);
+    }
+
+    /* Themes */
+    .horiz-card[data-theme="dark"] { background: #1a1512; color: #EBE7E0; }
+    .horiz-card[data-theme="dark"] .text-secondary { color: rgba(235, 231, 224, 0.6) !important; }
+    .horiz-card[data-theme="dark"] .tech-pill { border-color: rgba(255,255,255,0.2); color: #EBE7E0; }
+
+    .horiz-card[data-theme="accent"] { background: #D46A35; color: #fff; }
+    .horiz-card[data-theme="accent"] .text-secondary { color: rgba(255,255,255,0.8) !important; }
+    .horiz-card[data-theme="accent"] .tech-pill { border-color: rgba(255,255,255,0.3); color: #fff; background: rgba(255,255,255,0.1); }
+    .horiz-card[data-theme="accent"] .horiz-num { color: rgba(255,255,255,0.1); }
+
+    .horiz-num {
+        font-family: 'Playfair Display', serif;
+        font-size: 8rem;
+        position: absolute;
+        top: 20px; left: 30px;
+        line-height: 1;
+        opacity: 0.06;
+        pointer-events: none;
+    }
+
+    .horiz-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3rem;
+        margin-bottom: 20px;
+        line-height: 1;
+    }
+
+    /* Mobile fix */
+    @media (max-width: 991px) {
+        .horizontal-section { height: auto; }
+        .pin-wrap { position: relative; height: auto; display: block; overflow: visible; }
+        .horizontal-track { 
+            flex-direction: column; 
+            width: 100%; 
+            height: auto; 
+            transform: none !important; 
+            padding: 50px 20px;
+            gap: 40px;
+        }
+        .horiz-item-intro { width: 100%; margin-bottom: 40px; }
+        .horiz-card { width: 100%; height: 600px; flex-direction: column; }
+        .horiz-card-body { width: 100%; height: 50%; padding: 30px; }
+        .horiz-card-visual { width: 100%; height: 50%; }
+    }
+    </style>
+</head>
+<body>
+    <!-- Texture Overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="preloader-counter">0%</div>
+        <div class="preloader-text">Загрузка</div>
+    </div>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot" data-cursor-dot></div>
+    <div class="cursor-outline" data-cursor-outline></div>
+
+    <main class="main-content">
+
+    <!-- Navbar -->
+    <nav class="navbar fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">PRYTKOV.</a>
+            <div class="d-none d-lg-flex gap-4">
+                <a class="nav-link" href="#about" data-text="Обо мне"><span>Обо мне</span></a>
+                <a class="nav-link" href="#work" data-text="Проекты"><span>Проекты</span></a>
+                <a class="nav-link" href="#contact" data-text="Связь"><span>Связь</span></a>
+            </div>
+            <button class="navbar-toggler border-0 d-lg-none" type="button">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="d-flex align-items-center position-relative" style="padding-top: 140px; padding-bottom: 80px; min-height: 100vh; overflow: hidden;">
+        <!-- Background Decor -->
+        <div style="position: absolute; top: -10%; right: -10%; width: 60%; height: 80%; background: radial-gradient(circle, rgba(212,106,53,0.08) 0%, transparent 70%); z-index: 0; pointer-events: none;"></div>
+
+        <div class="container position-relative" style="z-index: 2;">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <!-- Badge -->
+                    <div class="hero-stagger" style="transition-delay: 0.1s;">
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <span class="d-inline-block" style="width: 40px; height: 1px; background: var(--text-secondary);"></span>
+                            <span class="text-uppercase text-secondary" style="letter-spacing: 3px; font-size: 0.8rem; font-weight: 600;">Backend Architect</span>
+                        </div>
+                    </div>
+
+                    <!-- Title -->
+                    <h1 class="display-1 hero-word">Архитектура и Логика Для Бизнеса</h1>
+                    
+                    <!-- Text -->
+                    <p class="lead mb-5 hero-stagger" style="max-width: 450px; color: var(--text-secondary); line-height: 1.6; transition-delay: 0.4s;">
+                        Дмитрий Прытков. Я не просто пишу код. Я создаю <strong>цифровой фундамент</strong>. Проектирование баз данных, backend-архитектура и аналитика высокого уровня.
+                    </p>
+
+                    <!-- Buttons -->
+                    <div class="d-flex gap-3 hero-stagger" style="transition-delay: 0.5s;">
+                        <a href="#contact" class="btn-glow">Начать Проект</a>
+                        <a href="#work" class="btn-outline-custom">Портфолио</a>
+                    </div>
+
+                    <!-- Stats / Trust -->
+                    <div class="mt-5 pt-4 border-top border-secondary-subtle d-flex gap-5 hero-stagger" style="transition-delay: 0.6s; opacity: 0.7;">
+                        <div>
+                            <div style="font-family: 'Playfair Display'; font-size: 2rem; line-height: 1;">3+</div>
+                            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Года опыта</div>
+                        </div>
+                        <div>
+                            <div style="font-family: 'Playfair Display'; font-size: 2rem; line-height: 1;">15+</div>
+                            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;">Проектов</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5 position-relative mt-5 mt-lg-0">
+                    <div class="hero-wrapper hero-stagger" style="transition-delay: 0.7s;">
+                        <div class="hero-img-container">
+                            <img src="images/Главный баннер (Hero Section).jpeg" alt="Dmitry Prytkov" class="parallax-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee (Бегущая строка) -->
+    <section class="marquee-section">
+        <div class="marquee-rotate-wrapper">
+            <div class="marquee-track">
+                <div class="marquee-group">
+                    <span class="marquee-text">БЭКЕНД РАЗРАБОТКА</span>
+                    <span class="marquee-icon"><i class="fas fa-star-of-life"></i></span>
+                    <span class="marquee-text">PYTHON EXPERT</span>
+                    <span class="marquee-icon"><i class="fas fa-star-of-life"></i></span>
+                    <span class="marquee-text">АРХИТЕКТУРА</span>
+                    <span class="marquee-icon"><i class="fas fa-star-of-life"></i></span>
+                    <span class="marquee-text">ВЫСОКИЕ НАГРУЗКИ</span>
+                    <span class="marquee-icon"><i class="fas fa-star-of-life"></i></span>
+                </div>
+                <div class="marquee-group">
+                    <span class="marquee-text">БЭКЕНД РАЗРАБОТКА</span>
+                    <span class="marquee-icon"><i class="fas fa-star-of-life"></i></span>
+                    <span class="marquee-text">PYTHON EXPERT</span>
+                    <span class="marquee-icon"><i class="fas fa-star-of-life"></i></span>
+                    <span class="marquee-text">АРХИТЕКТУРА</span>
+                    <span class="marquee-icon"><i class="fas fa-star-of-life"></i></span>
+                    <span class="marquee-text">ВЫСОКИЕ НАГРУЗКИ</span>
+                    <span class="marquee-icon"><i class="fas fa-star-of-life"></i></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        /* --- SPOTLIGHT EFFECT --- */
+        .bento-card {
+            background: rgba(255, 255, 255, 0.03); /* More transparent base */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Глоу-эффект при наведении курсора */
+        .bento-card::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 30px;
+            background: radial-gradient(
+                600px circle at var(--mouse-x, 0) var(--mouse-y, 0),
+                rgba(212, 106, 53, 0.1),
+                transparent 40%
+            );
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        /* Подсветка границ */
+        .bento-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 30px;
+            padding: 1px;
+            background: radial-gradient(
+                400px circle at var(--mouse-x, 0) var(--mouse-y, 0),
+                rgba(212, 106, 53, 0.8),
+                transparent 40%
+            );
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .bento-card:hover::after,
+        .bento-card:hover::before {
+            opacity: 1;
+        }
+
+        .marquee-section {
+            padding: 80px 0;
+            overflow: hidden;
+            margin-bottom: 100px;
+            position: relative;
+        }
+
+        .marquee-rotate-wrapper {
+            background: var(--accent);
+            transform: rotate(-2deg) scale(1.1);
+            padding: 20px 0;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .marquee-track {
+            display: flex;
+            width: fit-content;
+            animation: scroll-infinite 25s linear infinite;
+            will-change: transform;
+        }
+
+        .marquee-group {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .marquee-text {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(4rem, 8vw, 7rem);
+            font-weight: 700;
+            font-style: italic;
+            color: var(--bg-main);
+            margin: 0 40px;
+            white-space: nowrap;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+        
+        .marquee-icon {
+            color: var(--text-primary);
+            font-size: 3rem;
+            opacity: 0.8;
+            animation: spin 8s linear infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes scroll-infinite {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <!-- Bento Grid: About -->
+    <section id="about" class="py-5 position-relative">
+        <!-- Ambient Background Blobs for Glassmorphism -->
+        <div class="ambient-blob blob-1"></div>
+        <div class="ambient-blob blob-2"></div>
+
+        <div class="container position-relative" style="z-index: 2;">
+            <div class="section-header reveal-up">
+                <h2 class="section-title">Экспертиза</h2>
+                <p class="text-secondary mb-0" style="max-width: 300px;">01 — Навыки</p>
+            </div>
+
+            <div class="bento-grid">
+                <!-- Video Section -->
+                <div class="bento-card span-video reveal-up" data-tilt data-tilt-max="5" data-tilt-speed="1000" data-tilt-perspective="2000">
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/bmZ8yrXA0PQ?controls=0" title="YouTube" class="w-100 h-100" style="border:0;" allowfullscreen></iframe>
+                    </div>
+                    <div class="card-shine"></div>
+                </div>
+
+                <!-- SQL Card -->
+                <div class="bento-card span-card reveal-up" style="transition-delay: 0.1s;" data-tilt data-tilt-max="10" data-tilt-speed="1000">
+                    <div class="icon-box">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div>
+                        <h4 class="bento-title">SQL & Данные</h4>
+                        <p class="bento-text">Сложные схемы данных и оптимизация запросов.</p>
+                    </div>
+                    <div class="card-shine"></div>
+                </div>
+
+                <!-- Backend Card -->
+                <div class="bento-card span-card reveal-up" style="transition-delay: 0.2s;" data-tilt data-tilt-max="10" data-tilt-speed="1000">
+                    <div class="icon-box">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div>
+                        <h4 class="bento-title">Backend API</h4>
+                        <p class="bento-text">REST, микросервисы, безопасность систем.</p>
+                    </div>
+                    <div class="card-shine"></div>
+                </div>
+
+                <!-- Stack Card -->
+                <div class="bento-card span-wide reveal-up" style="transition-delay: 0.3s;" data-tilt data-tilt-max="5" data-tilt-speed="1000">
+                    <div>
+                        <h4 class="bento-title mb-4">Технологический стек</h4>
+                        <div class="d-flex flex-wrap">
+                            <span class="tech-pill">Python</span>
+                            <span class="tech-pill">Node.js</span>
+                            <span class="tech-pill">PostgreSQL</span>
+                            <span class="tech-pill">Docker</span>
+                            <span class="tech-pill">Nginx</span>
+                            <span class="tech-pill">Git</span>
+                        </div>
+                    </div>
+                    <div class="card-shine"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects: Horizontal Scroll -->
+    <section id="work" class="horizontal-section">
+        <div class="pin-wrap">
+            <div class="horizontal-track">
+                
+                <!-- Intro Item -->
+                <div class="horiz-item-intro">
+                    <span class="text-uppercase text-secondary mb-3" style="letter-spacing: 2px; font-size: 0.9rem;">Portfolio</span>
+                    <h2 class="display-1 lh-1 mb-4" style="font-size: 5rem;">Избранные<br>Проекты</h2>
+                    <p class="lead text-secondary" style="max-width: 300px;">
+                        Листайте вправо, чтобы изучить ключевые архитектурные кейсы →
+                    </p>
+                </div>
+
+                <!-- Project 1 -->
+                <div class="horiz-card" data-theme="dark">
+                    <div class="horiz-card-body">
+                        <span class="text-uppercase text-secondary mb-3" style="letter-spacing: 2px;">Базы Данных</span>
+                        <h3 class="horiz-title">БД Автосалона</h3>
+                        <p class="text-secondary mb-4 opacity-75">
+                            Проектирование сложной архитектуры базы данных для дилерского центра. Нормализация до 3НФ и оптимизация.
+                        </p>
+                        <div class="d-flex gap-2 flex-wrap mb-4">
+                            <span class="tech-pill">PostgreSQL</span>
+                            <span class="tech-pill">SQL Optimization</span>
+                        </div>
+                        <a href="#" class="btn-link-custom text-white border-white">Подробнее</a>
+                        <div class="horiz-num">01</div>
+                    </div>
+                    <div class="horiz-card-visual">
+                        <img src="images/Галерея2.jpeg" alt="Project 1" class="horiz-card-img">
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="horiz-card" data-theme="accent">
+                    <div class="horiz-card-body">
+                        <span class="text-uppercase text-white-50 mb-3" style="letter-spacing: 2px;">Telegram Bot</span>
+                        <h3 class="horiz-title">Delivery Bot</h3>
+                        <p class="text-white-50 mb-4">
+                            Высоконагруженный бот для службы доставки. Интеграция с платежными шлюзами и админ-панель.
+                        </p>
+                        <div class="d-flex gap-2 flex-wrap mb-4">
+                            <span class="tech-pill">Python</span>
+                            <span class="tech-pill">Aiogram</span>
+                            <span class="tech-pill">Redis</span>
+                        </div>
+                        <a href="#" class="btn-link-custom text-white border-white">Подробнее</a>
+                        <div class="horiz-num">02</div>
+                    </div>
+                    <div class="horiz-card-visual">
+                        <img src="images/Галерея5.png" alt="Project 2" class="horiz-card-img">
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="horiz-card" data-theme="light">
+                    <div class="horiz-card-body">
+                        <span class="text-uppercase text-secondary mb-3" style="letter-spacing: 2px;">CRM System</span>
+                        <h3 class="horiz-title">Corporate CRM</h3>
+                        <p class="text-secondary mb-4 opacity-75">
+                            Централизованная система управления клиентами. Ролевая модель доступа и генерация отчетов.
+                        </p>
+                        <div class="d-flex gap-2 flex-wrap mb-4">
+                            <span class="tech-pill">Django</span>
+                            <span class="tech-pill">React</span>
+                            <span class="tech-pill">Docker</span>
+                        </div>
+                        <a href="#" class="btn-link-custom">Подробнее</a>
+                        <div class="horiz-num">03</div>
+                    </div>
+                    <div class="horiz-card-visual">
+                        <img src="images/Галерея3.png" alt="Project 3" class="horiz-card-img">
+                    </div>
+                </div>
+
+                <!-- Outro -->
+                <div class="horiz-item-intro ps-5">
+                    <h2 class="display-1 lh-1 mb-4" style="font-size: 4rem;">Больше<br>на GitHub</h2>
+                    <a href="https://github.com/Exorice7" target="_blank" class="btn-glow">Перейти в профиль</a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- WORKFLOW / PROCESS (Interactive Accordion) -->
+    <section class="py-5" style="background: var(--bg-main);">
+        <div class="container py-5">
+            <div class="section-header reveal-up">
+                <h2 class="section-title">Методология</h2>
+                <p class="text-secondary mb-0" style="max-width: 300px;">03 — Процесс</p>
+            </div>
+
+            <div class="process-wrapper reveal-up">
+                <!-- Item 1 -->
+                <div class="process-item">
+                    <div class="process-header">
+                        <span class="process-num">01</span>
+                        <h3 class="process-title">Системный Аудит</h3>
+                        <i class="fas fa-plus process-icon"></i>
+                    </div>
+                    <div class="process-body">
+                        <div class="process-content">
+                            <p>Глубокий анализ бизнес-требований и текущей инфраструктуры. Поиск узких мест (bottlenecks), планирование мощностей и выбор оптимального стека технологий под конкретные задачи.</p>
+                            <div class="d-flex gap-3 mt-3">
+                                <span class="tech-pill-small">Profiling</span>
+                                <span class="tech-pill-small">Analytics</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="process-item">
+                    <div class="process-header">
+                        <span class="process-num">02</span>
+                        <h3 class="process-title">Архитектура БД</h3>
+                        <i class="fas fa-plus process-icon"></i>
+                    </div>
+                    <div class="process-body">
+                        <div class="process-content">
+                            <p>Проектирование нормализованных схем данных (ER-diagrams). Настройка индексов, партиционирование таблиц и репликация для обеспечения отказоустойчивости и высокой скорости чтения/записи.</p>
+                            <div class="d-flex gap-3 mt-3">
+                                <span class="tech-pill-small">PostgreSQL</span>
+                                <span class="tech-pill-small">Redis</span>
+                                <span class="tech-pill-small">Sharding</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="process-item">
+                    <div class="process-header">
+                        <span class="process-num">03</span>
+                        <h3 class="process-title">Разработка API</h3>
+                        <i class="fas fa-plus process-icon"></i>
+                    </div>
+                    <div class="process-body">
+                        <div class="process-content">
+                            <p>Написание чистого, типизированного кода на Python. Реализация RESTful или GraphQL API, настройка асинхронных очередей задач (Celery/RabbitMQ) и покрытие кода тестами.</p>
+                            <div class="d-flex gap-3 mt-3">
+                                <span class="tech-pill-small">FastAPI</span>
+                                <span class="tech-pill-small">Docker</span>
+                                <span class="tech-pill-small">CI/CD</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Item 4 -->
+                <div class="process-item">
+                    <div class="process-header">
+                        <span class="process-num">04</span>
+                        <h3 class="process-title">HighLoad & Деплой</h3>
+                        <i class="fas fa-plus process-icon"></i>
+                    </div>
+                    <div class="process-body">
+                        <div class="process-content">
+                            <p>Настройка Nginx, балансировщиков нагрузки и контейнеризация. Мониторинг метрик (Prometheus/Grafana) и оптимизация под высокие нагрузки в продакшене.</p>
+                            <div class="d-flex gap-3 mt-3">
+                                <span class="tech-pill-small">Nginx</span>
+                                <span class="tech-pill-small">Linux</span>
+                                <span class="tech-pill-small">Monitoring</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .process-wrapper {
+            border-top: 1px solid var(--border);
+        }
+        
+        .process-item {
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background-color 0.4s ease;
+        }
+        .process-item:hover {
+            background-color: rgba(255,255,255,0.4);
+        }
+
+        .process-header {
+            padding: 40px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .process-num {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: var(--accent);
+            margin-right: 40px;
+            font-weight: 500;
+        }
+
+        .process-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            margin: 0;
+            flex-grow: 1;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .process-icon {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            transition: transform 0.4s;
+        }
+
+        /* Accordion Logic */
+        .process-body {
+            height: 0;
+            overflow: hidden;
+            transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0.8;
+        }
+        .process-content {
+            padding: 0 0 40px 60px; /* Indent content */
+            max-width: 700px;
+        }
+        @media(max-width: 768px) {
+            .process-content { padding-left: 0; }
+        }
+
+        .tech-pill-small {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            border: 1px solid var(--border);
+            padding: 5px 15px;
+            border-radius: 50px;
+            color: var(--text-secondary);
+        }
+
+        /* Hover States */
+        .process-item:hover .process-title {
+            transform: translateX(20px);
+            color: var(--accent);
+        }
+        .process-item:hover .process-icon {
+            transform: rotate(90deg);
+            color: var(--accent);
+        }
+        /* Active State (via JS if we add click, but hover works for pure CSS feel too) */
+        .process-item:hover .process-body {
+            height: 140px; /* Approximation, or use JS for auto */
+        }
+        @media(max-width: 768px) {
+            .process-item:hover .process-body { height: 200px; }
+        }
+    </style>
+
+    <!-- Gallery -->
+    <section class="py-5 overflow-hidden">
+        <div class="container">
+            <h2 class="section-title mb-5 text-center reveal-up">Визуализация</h2>
+        </div>
+        <div class="container-fluid p-0">
+            <div class="gallery-grid px-4">
+                <div class="gallery-card reveal-up"><img src="images/Галерея.png" alt="Gallery" class="parallax-img"></div>
+                <div class="gallery-card reveal-up" style="transition-delay: 0.1s;"><img src="images/Галерея2.jpeg" alt="Gallery" class="parallax-img"></div>
+                <div class="gallery-card reveal-up" style="transition-delay: 0.2s;"><img src="images/Галерея3.png" alt="Gallery" class="parallax-img"></div>
+                <div class="gallery-card reveal-up" style="transition-delay: 0.3s;"><img src="images/Галерея4.png" alt="Gallery" class="parallax-img"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews -->
+    <section class="py-5" style="background: #E3DED5; margin-top: 50px;">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-6 reveal-up">
+                    <p class="review-quote">"Дмитрий спроектировал архитектуру, которая выдерживает огромные нагрузки. Отчеты формируются мгновенно."</p>
+                    <div class="review-author">— Иван Петров, СтройМир</div>
+                </div>
+                <div class="col-lg-6 reveal-up" style="transition-delay: 0.2s;">
+                    <p class="review-quote">"Код чистый, логика железная. Все работает как швейцарские часы. Рекомендую для сложных задач."</p>
+                    <div class="review-author">— Мария Сидорова, HR Менеджер</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    </main>
+
+    <!-- FOOTER (CONTACT) -->
+    <footer id="contact">
+        <div class="container">
+            <div class="section-header reveal-up" style="border-top: none;">
+                <span class="text-uppercase text-secondary" style="letter-spacing: 2px;">03 — Контакты</span>
+                <span class="text-uppercase text-secondary">Связь</span>
+            </div>
+
+            <h2 class="contact-title reveal-up">Давайте создадим<br>что-то <i>настоящее.</i></h2>
+
+            <div class="row">
+                <!-- Contact Form -->
+                <div class="col-lg-6 reveal-up">
+                    <form>
+                        <input type="text" class="form-coffee" placeholder="Ваше Имя" required>
+                        <input type="email" class="form-coffee" placeholder="Email" required>
+                        <input type="text" class="form-coffee" placeholder="О задаче..." required>
+                        <button class="btn-glow mt-4 border-0 cursor-pointer">Отправить Заявку</button>
+                    </form>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="col-lg-5 offset-lg-1 mt-5 mt-lg-0 reveal-up" style="transition-delay: 0.2s;">
+                    <div class="mb-5">
+                        <div class="footer-info-label">Почта</div>
+                        <a href="mailto:dima.prytkov2005@gmail.com" class="footer-info-val">dima.prytkov2005@gmail.com</a>
+                    </div>
+                    <div class="mb-5">
+                        <div class="footer-info-label">Телефон</div>
+                        <a href="tel:+79287068477" class="footer-info-val">+7 (928) 706-84-77</a>
+                    </div>
+                    <div class="mb-5">
+                        <div class="footer-info-label">Локация</div>
+                        <div class="footer-info-val">Ростов-на-Дону, Россия</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom reveal-up">
+                <span>© 2025 Дмитрий Прытков</span>
+                <a href="#" class="text-decoration-none text-secondary">Вверх ↑</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lenis -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <!-- Vanilla Tilt -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // --- 1. Word Reveal Splitting (Universal) ---
+        function splitText(selector, delayStart = 0) {
+            document.querySelectorAll(selector).forEach(el => {
+                const text = el.innerText.trim();
+                const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+                
+                el.innerHTML = '';
+                let wordIndex = 0;
+                
+                lines.forEach((line, lineIdx) => {
+                    const words = line.split(' ');
+                    words.forEach((word, idx) => {
+                        const span = document.createElement('span');
+                        span.innerText = word;
+                        // Базовая задержка + индекс слова
+                        span.style.transitionDelay = `${delayStart + (wordIndex * 0.08)}s`;
+                        el.appendChild(span);
+                        
+                        if (idx < words.length - 1) {
+                            el.appendChild(document.createTextNode('\u00A0'));
+                        }
+                        wordIndex++;
+                    });
+                    
+                    if (lineIdx < lines.length - 1) {
+                        el.appendChild(document.createElement('br'));
+                    }
+                });
+            });
+        }
+        
+        // Запускаем для скролл-анимаций
+        splitText('.word-reveal');
+        // Запускаем для Hero (с начальной задержкой 0.2s)
+        splitText('.hero-word', 0.2);
+
+        // --- 2. Lenis Smooth Scroll + Parallax ---
+        const lenis = new Lenis({
+            duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical', smooth: true
+        });
+        
+        const parallaxImages = document.querySelectorAll('.parallax-img');
+        
+        // Horizontal Scroll Elements
+        const horizSection = document.querySelector('.horizontal-section');
+        const horizTrack = document.querySelector('.horizontal-track');
+
+        function raf(time) {
+            lenis.raf(time);
+            
+            // Parallax Images
+            parallaxImages.forEach(img => {
+                const rect = img.parentElement.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    const dist = (rect.top + rect.height/2) - window.innerHeight/2;
+                    img.style.transform = `translateY(${dist * 0.1}px) scale(1.05)`;
+                }
+            });
+
+            // Horizontal Scroll Logic
+            if (horizSection && horizTrack && window.innerWidth > 991) {
+                const rect = horizSection.getBoundingClientRect();
+                const sectionTop = rect.top;
+                const sectionHeight = rect.height;
+                const windowHeight = window.innerHeight;
+                
+                // Calculate progress based on scroll position relative to section
+                // We want to scroll the track when the section enters view
+                // Actually, with position: sticky, the "pin-wrap" stays fixed.
+                // We need to move the track based on how far we've scrolled *through* the section.
+                
+                // Logic: 
+                // 1. The section is tall (400vh).
+                // 2. The wrap sticks for 300vh of that.
+                // 3. We map that vertical distance to horizontal translation.
+                
+                // Offset calculation:
+                // When sectionTop is 0 (top of viewport), progress is 0.
+                // When sectionTop is -(sectionHeight - windowHeight), progress is 1.
+                
+                const scrollDistance = sectionHeight - windowHeight;
+                let progress = -sectionTop / scrollDistance;
+                
+                // Clamp progress between 0 and 1
+                progress = Math.max(0, Math.min(1, progress));
+                
+                // Max horizontal scroll = track width - viewport width
+                const trackWidth = horizTrack.offsetWidth;
+                const viewportWidth = window.innerWidth;
+                const maxTranslate = trackWidth - viewportWidth;
+                
+                // Only transform if we have content to scroll
+                if (maxTranslate > 0) {
+                     const translateX = progress * maxTranslate;
+                     horizTrack.style.transform = `translateX(-${translateX}px)`;
+                }
+            }
+
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // --- 3. Preloader ---
+        const counterElement = document.querySelector('.preloader-counter');
+        let count = 0;
+        function updateCounter() {
+            if (count < 100) {
+                count += Math.floor(Math.random() * 5) + 1;
+                if(count > 100) count = 100;
+                counterElement.textContent = count + '%';
+                setTimeout(updateCounter, Math.random() * 50 + 20);
+            } else {
+                setTimeout(() => document.body.classList.add('loaded'), 500);
+            }
+        }
+        updateCounter();
+
+        // --- 4. Custom Cursor ---
+        const cursorDot = document.querySelector('[data-cursor-dot]');
+        const cursorOutline = document.querySelector('[data-cursor-outline]');
+        const interactiveElements = document.querySelectorAll('a, button, input, textarea, .bento-card, .gallery-card, .marquee-pill');
+
+        window.addEventListener('mousemove', (e) => {
+            cursorDot.style.left = `${e.clientX}px`;
+            cursorDot.style.top = `${e.clientY}px`;
+            cursorOutline.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: "forwards" });
+        });
+
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+        });
+
+        // --- 5. Scroll Reveal ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal-up, .word-reveal').forEach(el => observer.observe(el));
+        
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.navbar');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        });
+
+        // --- 6. Bento Spotlight Effect ---
+        document.querySelectorAll('.bento-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // --- 7. Magnetic Buttons ---
+        const magneticBtns = document.querySelectorAll('.btn-glow, .btn-outline-custom, .nav-link');
+        
+        magneticBtns.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                
+                // Сила притяжения (чем меньше делитель, тем сильнее)
+                btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px) scale(1.05)`;
+            });
+
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translate(0, 0) scale(1)';
+            });
+        });
+
+        // --- 8. Footer Reveal Logic ---
+        function updateFooterHeight() {
+            const footer = document.querySelector('footer');
+            const main = document.querySelector('.main-content');
+            if(footer && main) {
+                // Добавляем небольшой буфер, чтобы точно не было видно футера раньше времени
+                main.style.marginBottom = `${footer.offsetHeight}px`;
+            }
+        }
+        window.addEventListener('resize', updateFooterHeight);
+        window.addEventListener('load', updateFooterHeight);
+        // Observer для отслеживания изменений размера (например, подгрузка шрифтов)
+        const resizeObserver = new ResizeObserver(updateFooterHeight);
+        resizeObserver.observe(document.querySelector('footer'));
+    </script>
+</body>
+</html>
