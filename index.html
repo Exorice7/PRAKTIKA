@@ -761,12 +761,14 @@
         .horiz-card-visual { width: 100%; height: 50%; }
     }
 
-    /* --- EXPERTISE REDESIGN (CSS AWARDS STYLE) --- */
+    /* --- EXPERTISE REDESIGN: "The Architect's Void" (CSS Awards Level) --- */
     .expertise-section {
         position: relative;
-        height: 300vh; /* Long scroll area */
+        height: 400vh; /* Deep scroll for sequence */
         background: var(--bg-main);
         z-index: 10;
+        perspective: 2000px; /* Deep perspective */
+        overflow: visible; /* Allow 3D elements to clip if needed, but usually hidden */
     }
 
     .expertise-sticky {
@@ -778,145 +780,193 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        perspective: 1000px;
+        perspective: 1000px; /* For children 3d */
     }
 
-    .expertise-bg-text {
+    /* The 3D Stage that rotates/moves */
+    .expertise-stage {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        will-change: transform;
+    }
+
+    /* Floating Background Title */
+    .expertise-bg-title {
         position: absolute;
         top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%) translateZ(-200px);
         font-family: 'Playfair Display', serif;
-        font-size: 15vw;
-        font-weight: 700;
-        color: rgba(44, 36, 31, 0.03);
+        font-size: 20vw;
+        line-height: 0.8;
+        font-weight: 800;
+        color: transparent;
+        -webkit-text-stroke: 2px rgba(44, 36, 31, 0.05);
         white-space: nowrap;
         pointer-events: none;
         z-index: 0;
-        transition: letter-spacing 0.5s;
+        opacity: 0; /* Controlled by JS */
     }
 
-    .expertise-cards-wrapper {
-        position: relative;
-        width: 100%;
-        max-width: 1200px;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 2;
+    /* Floating Particles/Grid */
+    .architectural-grid {
+        position: absolute;
+        top: -50%; left: -50%;
+        width: 200%; height: 200%;
+        background-image: 
+            linear-gradient(rgba(44, 36, 31, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(44, 36, 31, 0.03) 1px, transparent 1px);
+        background-size: 100px 100px;
+        transform: rotateX(60deg) translateZ(-500px);
+        pointer-events: none;
+        z-index: 0;
+        mask-image: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 70%);
+        -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 70%);
+    }
+
+    /* Card Wrapper Container */
+    .cards-orbit {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 0; height: 0;
         transform-style: preserve-3d;
     }
 
-    .exp-card-wrapper {
+    /* New Glass Monolith Card Style */
+    .monolith-card {
         position: absolute;
-        will-change: transform, opacity;
-        opacity: 0;
-        /* Positioning */
-    }
-
-    .exp-wrap-1 { top: 20%; left: 10%; }
-    .exp-wrap-2 { top: 15%; right: 10%; }
-    .exp-wrap-3 { bottom: 15%; left: 50%; transform: translateX(-50%); }
-
-    .exp-card {
-        width: 350px;
-        height: 500px;
-        background: linear-gradient(135deg, #fffdfa 0%, #f0e9e0 100%);
+        width: 380px;
+        height: 520px;
+        left: -190px; top: -260px;
+        background: rgba(255, 255, 255, 0.85);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 24px;
         padding: 40px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
         box-shadow: 
-            0 20px 40px -10px rgba(0,0,0,0.1),
-            inset 0 0 0 1px rgba(255,255,255,0.2);
-        transition: box-shadow 0.3s;
+            0 20px 50px -10px rgba(0,0,0,0.1),
+            inset 0 0 0 1px rgba(255,255,255,0.5);
         transform-style: preserve-3d;
-    }
-
-    .exp-card:hover {
-        box-shadow: 
-            0 40px 80px -20px rgba(212, 106, 53, 0.2),
-            inset 0 0 0 2px rgba(255,255,255,0.5);
-    }
-
-    /* Specific Card Themes */
-    .exp-card-dark { background: #1a1512; color: #EBE7E0; border-color: rgba(255,255,255,0.1); }
-    .exp-card-accent { background: #D46A35; color: white; border-color: rgba(255,255,255,0.2); }
-
-    /* Content & Visuals */
-    .exp-card-icon {
-        font-size: 3rem;
-        margin-bottom: 20px;
-        transform: translateZ(40px);
+        opacity: 0; /* JS handles fade in */
+        overflow: hidden;
+        transition: border-color 0.3s;
     }
     
-    .exp-card-title {
+    .monolith-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(125deg, rgba(255,255,255,0.4) 0%, transparent 100%);
+        z-index: 0;
+        opacity: 0.5;
+    }
+
+    .monolith-card:hover {
+        border-color: var(--accent);
+    }
+
+    .monolith-content {
+        position: relative;
+        z-index: 2;
+        transform: translateZ(20px);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mono-num {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+        color: var(--accent);
+        margin-bottom: 20px;
+        opacity: 0.7;
+    }
+
+    .mono-title {
         font-family: 'Playfair Display', serif;
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         line-height: 1;
         margin-bottom: 15px;
-        transform: translateZ(30px);
+        color: var(--text-primary);
     }
-    
-    .exp-card-desc {
-        font-size: 0.9rem;
+
+    .mono-desc {
+        font-size: 0.95rem;
         line-height: 1.6;
-        opacity: 0.8;
-        transform: translateZ(20px);
+        color: var(--text-secondary);
+        margin-bottom: 30px;
     }
 
-    .exp-card-visual {
+    /* Visual Elements inside cards */
+    .mono-visual {
         margin-top: auto;
-        height: 100px;
-        border-radius: 15px;
-        overflow: hidden;
+        height: 140px;
+        background: rgba(44, 36, 31, 0.03);
+        border-radius: 16px;
         position: relative;
-        background: rgba(0,0,0,0.05);
-        transform: translateZ(20px);
+        overflow: hidden;
+        border: 1px solid rgba(44, 36, 31, 0.05);
     }
 
-    .exp-card-dark .exp-card-desc { opacity: 0.6; }
-    .exp-card-dark .exp-card-visual { background: rgba(255,255,255,0.05); }
+    /* Visual 1: System Nodes */
+    .node-sys {
+        position: absolute;
+        width: 10px; height: 10px;
+        background: var(--text-primary);
+        border-radius: 50%;
+        box-shadow: 0 0 0 4px rgba(44, 36, 31, 0.1);
+    }
+    .line-sys {
+        position: absolute;
+        height: 1px;
+        background: var(--text-primary);
+        opacity: 0.2;
+        transform-origin: 0 0;
+    }
 
-    /* Visuals */
-    .code-lines {
-        padding: 15px;
+    /* Visual 2: Code Stream */
+    .code-rain {
         font-family: monospace;
         font-size: 10px;
-        opacity: 0.5;
+        color: var(--accent);
+        opacity: 0.6;
+        padding: 15px;
         line-height: 1.4;
-        color: #00ff9d;
-    }
-    .typing-cursor {
-        display: inline-block;
-        width: 6px; height: 12px;
-        background: #00ff9d;
-        animation: blink 1s infinite;
-    }
-
-    .graph-bar {
-        position: absolute;
-        bottom: 0;
-        width: 15px;
-        background: rgba(255,255,255,0.8);
-        border-radius: 5px 5px 0 0;
-        animation: barHeight 2s infinite alternate ease-in-out;
     }
     
-    @keyframes blink { 50% { opacity: 0; } }
-    @keyframes barHeight { 0% { height: 20%; } 100% { height: 80%; } }
+    /* Visual 3: Bars */
+    .bar-group {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 6px;
+        height: 100%;
+        padding-bottom: 20px;
+    }
+    .bar-item {
+        width: 8px;
+        background: var(--text-primary);
+        border-radius: 4px 4px 0 0;
+        opacity: 0.2;
+    }
+    .bar-item.active {
+        background: var(--accent);
+        opacity: 1;
+    }
 
     @media (max-width: 991px) {
-        .expertise-section { height: auto; padding: 100px 0; }
-        .expertise-sticky { position: relative; height: auto; display: block; top: auto; overflow: visible; }
-        .expertise-bg-text { display: none; }
-        .expertise-cards-wrapper { flex-direction: column; gap: 40px; max-width: 100%; display: flex; }
-        .exp-card-wrapper { position: relative; top: auto !important; left: auto !important; right: auto !important; transform: none !important; width: 100%; opacity: 1; bottom: auto; }
-        .exp-card { width: 100%; }
+        .expertise-section { height: auto; padding: 80px 0; perspective: none; }
+        .expertise-sticky { position: relative; height: auto; top: auto; overflow: visible; display: block; perspective: none; }
+        .expertise-stage { transform: none !important; width: 100%; height: auto; }
+        .expertise-bg-title { display: none; }
+        .architectural-grid { display: none; }
+        .cards-orbit { position: relative; top: auto; left: auto; width: 100%; height: auto; transform: none !important; display: flex; flex-direction: column; gap: 40px; align-items: center; }
+        .monolith-card { position: relative; top: auto !important; left: auto !important; opacity: 1 !important; transform: none !important; width: 100%; max-width: 400px; }
     }
     </style>
 </head>
@@ -1145,63 +1195,65 @@
         }
     </style>
 
-    <!-- EXPERTISE REDESIGN (Parallax Scatter) -->
+    <!-- EXPERTISE REDESIGN (The Architect's Void) -->
     <section id="about" class="expertise-section">
         <div class="expertise-sticky">
-            <div class="expertise-bg-text">EXPERTISE</div>
-            
-            <div class="expertise-cards-wrapper">
-                <!-- Card 1: Architecture (Left Top) -->
-                <div class="exp-card-wrapper exp-wrap-1">
-                    <div class="exp-card" data-tilt data-tilt-max="10" data-tilt-speed="1000">
-                        <div>
-                            <div class="exp-card-icon"><i class="fas fa-cubes" style="color: var(--accent);"></i></div>
-                            <h3 class="exp-card-title">System<br>Design</h3>
-                            <p class="exp-card-desc">Проектирование отказоустойчивых распределенных систем. Микросервисы, Event Sourcing и DDD.</p>
-                        </div>
-                        <div class="exp-card-visual d-flex align-items-end justify-content-center pb-3 gap-2">
-                            <div style="width: 40px; height: 40px; border: 2px solid var(--text-secondary); border-radius: 50%;"></div>
-                            <div style="width: 2px; height: 20px; background: var(--text-secondary);"></div>
-                            <div style="width: 40px; height: 40px; border: 2px solid var(--accent); border-radius: 50%;"></div>
-                            <div style="width: 2px; height: 20px; background: var(--text-secondary);"></div>
-                            <div style="width: 40px; height: 40px; border: 2px solid var(--text-secondary); border-radius: 50%;"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 2: Backend (Right Top) -->
-                <div class="exp-card-wrapper exp-wrap-2">
-                    <div class="exp-card exp-card-dark" data-tilt data-tilt-max="10" data-tilt-speed="1000">
-                        <div>
-                            <div class="exp-card-icon"><i class="fas fa-terminal" style="color: #00ff9d;"></i></div>
-                            <h3 class="exp-card-title">Backend<br>Logic</h3>
-                            <p class="exp-card-desc">Чистый код на Python/Go. Асинхронность, безопасность и максимальная производительность API.</p>
-                        </div>
-                        <div class="exp-card-visual">
-                            <div class="code-lines">
-                                def init_server():<br>
-                                &nbsp;&nbsp;app = FastAPI()<br>
-                                &nbsp;&nbsp;await db.connect()<br>
-                                &nbsp;&nbsp;return app<span class="typing-cursor"></span>
+            <div class="expertise-stage">
+                <!-- Background Grid -->
+                <div class="architectural-grid"></div>
+                <!-- Big Title in Deep Space -->
+                <div class="expertise-bg-title">EXPERTISE</div>
+                
+                <div class="cards-orbit">
+                    <!-- Card 1: System Design (Left) -->
+                    <div class="monolith-card card-1" data-tilt data-tilt-max="5" data-tilt-speed="1000" data-tilt-glare data-tilt-max-glare="0.1">
+                        <div class="monolith-content">
+                            <div class="mono-num">01</div>
+                            <h3 class="mono-title">System<br>Design</h3>
+                            <p class="mono-desc">Проектирование отказоустойчивых распределенных систем. Микросервисы, Event Sourcing и DDD.</p>
+                            <div class="mono-visual">
+                                <!-- Visual Node System -->
+                                <div class="node-sys" style="top: 20%; left: 20%;"></div>
+                                <div class="node-sys" style="top: 50%; left: 80%;"></div>
+                                <div class="node-sys" style="top: 80%; left: 40%;"></div>
+                                <div class="line-sys" style="width: 120px; top: 25%; left: 25%; transform: rotate(25deg);"></div>
+                                <div class="line-sys" style="width: 80px; top: 55%; left: 85%; transform: rotate(145deg);"></div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Card 3: Highload (Bottom Center) -->
-                <div class="exp-card-wrapper exp-wrap-3">
-                    <div class="exp-card exp-card-accent" data-tilt data-tilt-max="10" data-tilt-speed="1000">
-                        <div>
-                            <div class="exp-card-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            <h3 class="exp-card-title">High<br>Performance</h3>
-                            <p class="exp-card-desc">Оптимизация под высокие нагрузки. Nginx, Caching, Sharding и балансировка трафика.</p>
+                    <!-- Card 2: Backend Logic (Center) -->
+                    <div class="monolith-card card-2" data-tilt data-tilt-max="5" data-tilt-speed="1000" data-tilt-glare data-tilt-max-glare="0.1">
+                        <div class="monolith-content">
+                            <div class="mono-num">02</div>
+                            <h3 class="mono-title">Backend<br>Logic</h3>
+                            <p class="mono-desc">Чистый код на Python/Go. Асинхронность, безопасность и максимальная производительность API.</p>
+                            <div class="mono-visual">
+                                <div class="code-rain">
+                                    def init_core():<br>
+                                    &nbsp;&nbsp;ctx = await db.pool()<br>
+                                    &nbsp;&nbsp;return ctx.serve()<br>
+                                    <span style="color: var(--text-primary);">// Ready</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="exp-card-visual d-flex align-items-end justify-content-around px-4 pb-2">
-                            <div class="graph-bar" style="height: 40%; animation-delay: 0s;"></div>
-                            <div class="graph-bar" style="height: 70%; animation-delay: 0.5s;"></div>
-                            <div class="graph-bar" style="height: 50%; animation-delay: 0.2s;"></div>
-                            <div class="graph-bar" style="height: 90%; animation-delay: 0.8s;"></div>
-                            <div class="graph-bar" style="height: 60%; animation-delay: 1.2s;"></div>
+                    </div>
+
+                    <!-- Card 3: High Load (Right) -->
+                    <div class="monolith-card card-3" data-tilt data-tilt-max="5" data-tilt-speed="1000" data-tilt-glare data-tilt-max-glare="0.1">
+                        <div class="monolith-content">
+                            <div class="mono-num">03</div>
+                            <h3 class="mono-title">High<br>Load</h3>
+                            <p class="mono-desc">Оптимизация под высокие нагрузки. Nginx, Caching, Sharding и балансировка трафика.</p>
+                            <div class="mono-visual d-flex align-items-end justify-content-center pb-3">
+                                <div class="bar-group">
+                                    <div class="bar-item active" style="height: 40%;"></div>
+                                    <div class="bar-item" style="height: 70%;"></div>
+                                    <div class="bar-item active" style="height: 50%;"></div>
+                                    <div class="bar-item" style="height: 90%;"></div>
+                                    <div class="bar-item active" style="height: 60%;"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1603,10 +1655,28 @@
         
         // Expertise Redesign Elements
         const expSection = document.querySelector('.expertise-section');
-        const expBgText = document.querySelector('.expertise-bg-text');
-        const expWrap1 = document.querySelector('.exp-wrap-1');
-        const expWrap2 = document.querySelector('.exp-wrap-2');
-        const expWrap3 = document.querySelector('.exp-wrap-3');
+        const expStage = document.querySelector('.expertise-stage');
+        const expBgTitle = document.querySelector('.expertise-bg-title');
+        const card1 = document.querySelector('.card-1');
+        const card2 = document.querySelector('.card-2');
+        const card3 = document.querySelector('.card-3');
+
+        // Mouse Parallax for Expertise Stage
+        let mouseX = 0, mouseY = 0;
+        let targetRotateX = 0, targetRotateY = 0;
+        let currentRotateX = 0, currentRotateY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            if(window.innerWidth > 991) {
+                // Normalized -1 to 1
+                const nx = (e.clientX / window.innerWidth) * 2 - 1;
+                const ny = (e.clientY / window.innerHeight) * 2 - 1;
+                
+                // Max rotation deg
+                targetRotateY = nx * 5; 
+                targetRotateX = -ny * 5;
+            }
+        });
 
         function raf(time) {
             lenis.raf(time);
@@ -1620,7 +1690,7 @@
                 }
             });
 
-            // --- EXPERTISE ANIMATION ---
+            // --- EXPERTISE ANIMATION (The Architect's Void) ---
             if (expSection && window.innerWidth > 991) {
                 const rect = expSection.getBoundingClientRect();
                 const sectionTop = rect.top;
@@ -1628,42 +1698,80 @@
                 let progress = -sectionTop / height;
                 progress = Math.max(0, Math.min(1, progress));
                 
-                // Animation Keyframes based on progress (0 to 1)
+                // Smooth mouse interaction
+                currentRotateX += (targetRotateX - currentRotateX) * 0.05;
+                currentRotateY += (targetRotateY - currentRotateY) * 0.05;
+
+                // Base Stage Transform + Scroll Rotation
+                // Scroll rotates the whole stage from slightly left to center
+                const stageRotateY = (1 - progress) * 20; // 20deg -> 0deg
+                const stageZ = (progress * 200) - 100; // Move slightly closer
                 
-                // Background Text: Scale Down & Move
-                if(expBgText) {
-                    // Start huge, shrink to normal
-                    const scale = 1.5 - (progress * 0.5); // 1.5 -> 1.0
-                    const yPos = progress * 100; 
-                    const opacity = Math.min(1, progress * 2); // Fade in
-                    expBgText.style.transform = `translate(-50%, calc(-50% + ${yPos}px)) scale(${scale})`;
-                    expBgText.style.opacity = 0.1 + (progress * 0.5);
-                    expBgText.style.letterSpacing = `${-10 + (progress * 10)}px`;
+                if(expStage) {
+                    expStage.style.transform = `
+                        rotateX(${currentRotateX}deg) 
+                        rotateY(${currentRotateY + stageRotateY}deg)
+                        translateZ(${stageZ}px)
+                    `;
                 }
 
-                // Cards Assembly
-                // Card 1 (Left): Comes from bottom-left
-                if(expWrap1) {
-                    const y = (1 - progress) * 600;
-                    const r = (1 - progress) * -15;
-                    expWrap1.style.transform = `translateY(${y}px) rotate(${r}deg)`;
-                    expWrap1.style.opacity = Math.min(1, progress * 3);
+                // 1. Background Title
+                if(expBgTitle) {
+                    // Starts far away (-1000px), comes to -200px
+                    // Opacity 0 -> 1
+                    const titleZ = -1000 + (progress * 800);
+                    const titleOp = Math.min(1, progress * 2);
+                    expBgTitle.style.transform = `translate(-50%, -50%) translateZ(${titleZ}px)`;
+                    expBgTitle.style.opacity = titleOp;
                 }
 
-                // Card 2 (Right): Comes from bottom-right, delayed
-                if(expWrap2) {
-                    const y = (1 - progress) * 800; // Faster/Further start
-                    const r = (1 - progress) * 15;
-                    expWrap2.style.transform = `translateY(${y}px) rotate(${r}deg)`;
-                    expWrap2.style.opacity = Math.min(1, (progress - 0.1) * 3);
+                // 2. Cards Choreography
+                
+                // Card 1 (Left): System Design
+                if(card1) {
+                    const p1 = Math.min(1, progress * 1.5); 
+                    // Moves from X:-1200 to X:-420
+                    // Z: -500 to 0
+                    const x = -1200 + (p1 * (1200 - 420)); 
+                    const z = -500 + (p1 * 500);
+                    const ry = -45 + (p1 * 45); // -45 -> 0
+                    const op = Math.min(1, p1 * 2);
+                    
+                    card1.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${ry}deg)`;
+                    card1.style.opacity = op;
                 }
 
-                // Card 3 (Center): Comes from very bottom
-                if(expWrap3) {
-                    const y = (1 - progress) * 1000;
-                    expWrap3.style.transform = `translateX(-50%) translateY(${y}px)`; // Maintain center X
-                    expWrap3.style.opacity = Math.min(1, (progress - 0.2) * 3);
+                // Card 2 (Center): Backend Logic
+                if(card2) {
+                    const p2 = Math.min(1, Math.max(0, (progress - 0.1) * 1.5));
+                    // Moves from Y:800 to Y:0
+                    const y = 800 - (p2 * 800);
+                    const s = 0.8 + (p2 * 0.2); // 0.8 -> 1.0
+                    const op = Math.min(1, p2 * 2);
+                    
+                    card2.style.transform = `translate3d(0, ${y}px, 50px) scale(${s})`; 
+                    card2.style.opacity = op;
+                    card2.style.zIndex = 10;
                 }
+
+                // Card 3 (Right): High Load
+                if(card3) {
+                    const p3 = Math.min(1, Math.max(0, (progress - 0.2) * 1.5));
+                    // Moves from X:1200 to X:420
+                    const x = 1200 - (p3 * (1200 - 420));
+                    const z = -500 + (p3 * 500);
+                    const ry = 45 - (p3 * 45); // 45 -> 0
+                    const op = Math.min(1, p3 * 2);
+                    
+                    card3.style.transform = `translate3d(${x}px, 0, ${z}px) rotateY(${ry}deg)`;
+                    card3.style.opacity = op;
+                }
+            } else {
+                // Mobile reset
+                if(expStage) expStage.style.transform = 'none';
+                if(card1) { card1.style.transform = 'none'; card1.style.opacity = 1; }
+                if(card2) { card2.style.transform = 'none'; card2.style.opacity = 1; }
+                if(card3) { card3.style.transform = 'none'; card3.style.opacity = 1; }
             }
 
             // Horizontal Scroll Logic
