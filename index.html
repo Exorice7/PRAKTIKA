@@ -334,12 +334,8 @@
         }
 
         .bento-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(40px) saturate(180%);
-            -webkit-backdrop-filter: blur(40px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-top: 1px solid rgba(255, 255, 255, 0.8);
-            border-left: 1px solid rgba(255, 255, 255, 0.8);
+            background: linear-gradient(160deg, rgba(255,255,255,0.98) 0%, rgba(240,233,224,0.96) 100%);
+            border: 1px solid rgba(44, 36, 31, 0.08);
             border-radius: 30px;
             padding: 40px;
             position: relative;
@@ -348,9 +344,9 @@
             flex-direction: column; 
             justify-content: space-between;
             box-shadow: 
-                0 20px 40px -10px rgba(0,0,0,0.1),
-                inset 0 0 0 1px rgba(255,255,255, 0.2);
-            transition: transform 0.1s;
+                0 30px 60px -35px rgba(44,36,31,0.6),
+                inset 0 1px 0 rgba(255,255,255,0.9);
+            transition: transform 0.1s, box-shadow 0.3s;
             transform-style: preserve-3d;
         }
 
@@ -882,8 +878,8 @@
     <style>
         /* --- SPOTLIGHT EFFECT --- */
         .bento-card {
-            background: rgba(255, 255, 255, 0.03); /* More transparent base */
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(160deg, rgba(255,255,255,0.98) 0%, rgba(240,233,224,0.96) 100%);
+            border: 1px solid rgba(44, 36, 31, 0.08);
         }
         
         /* Глоу-эффект при наведении курсора */
