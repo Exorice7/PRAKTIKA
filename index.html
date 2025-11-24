@@ -760,6 +760,164 @@
         .horiz-card-body { width: 100%; height: 50%; padding: 30px; }
         .horiz-card-visual { width: 100%; height: 50%; }
     }
+
+    /* --- EXPERTISE REDESIGN (CSS AWARDS STYLE) --- */
+    .expertise-section {
+        position: relative;
+        height: 300vh; /* Long scroll area */
+        background: var(--bg-main);
+        z-index: 10;
+    }
+
+    .expertise-sticky {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        perspective: 1000px;
+    }
+
+    .expertise-bg-text {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Playfair Display', serif;
+        font-size: 15vw;
+        font-weight: 700;
+        color: rgba(44, 36, 31, 0.03);
+        white-space: nowrap;
+        pointer-events: none;
+        z-index: 0;
+        transition: letter-spacing 0.5s;
+    }
+
+    .expertise-cards-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 1200px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        transform-style: preserve-3d;
+    }
+
+    .exp-card-wrapper {
+        position: absolute;
+        will-change: transform, opacity;
+        opacity: 0;
+        /* Positioning */
+    }
+
+    .exp-wrap-1 { top: 20%; left: 10%; }
+    .exp-wrap-2 { top: 15%; right: 10%; }
+    .exp-wrap-3 { bottom: 15%; left: 50%; transform: translateX(-50%); }
+
+    .exp-card {
+        width: 350px;
+        height: 500px;
+        background: linear-gradient(135deg, #fffdfa 0%, #f0e9e0 100%);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 30px;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 
+            0 20px 40px -10px rgba(0,0,0,0.1),
+            inset 0 0 0 1px rgba(255,255,255,0.2);
+        transition: box-shadow 0.3s;
+        transform-style: preserve-3d;
+    }
+
+    .exp-card:hover {
+        box-shadow: 
+            0 40px 80px -20px rgba(212, 106, 53, 0.2),
+            inset 0 0 0 2px rgba(255,255,255,0.5);
+    }
+
+    /* Specific Card Themes */
+    .exp-card-dark { background: #1a1512; color: #EBE7E0; border-color: rgba(255,255,255,0.1); }
+    .exp-card-accent { background: #D46A35; color: white; border-color: rgba(255,255,255,0.2); }
+
+    /* Content & Visuals */
+    .exp-card-icon {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        transform: translateZ(40px);
+    }
+    
+    .exp-card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        line-height: 1;
+        margin-bottom: 15px;
+        transform: translateZ(30px);
+    }
+    
+    .exp-card-desc {
+        font-size: 0.9rem;
+        line-height: 1.6;
+        opacity: 0.8;
+        transform: translateZ(20px);
+    }
+
+    .exp-card-visual {
+        margin-top: auto;
+        height: 100px;
+        border-radius: 15px;
+        overflow: hidden;
+        position: relative;
+        background: rgba(0,0,0,0.05);
+        transform: translateZ(20px);
+    }
+
+    .exp-card-dark .exp-card-desc { opacity: 0.6; }
+    .exp-card-dark .exp-card-visual { background: rgba(255,255,255,0.05); }
+
+    /* Visuals */
+    .code-lines {
+        padding: 15px;
+        font-family: monospace;
+        font-size: 10px;
+        opacity: 0.5;
+        line-height: 1.4;
+        color: #00ff9d;
+    }
+    .typing-cursor {
+        display: inline-block;
+        width: 6px; height: 12px;
+        background: #00ff9d;
+        animation: blink 1s infinite;
+    }
+
+    .graph-bar {
+        position: absolute;
+        bottom: 0;
+        width: 15px;
+        background: rgba(255,255,255,0.8);
+        border-radius: 5px 5px 0 0;
+        animation: barHeight 2s infinite alternate ease-in-out;
+    }
+    
+    @keyframes blink { 50% { opacity: 0; } }
+    @keyframes barHeight { 0% { height: 20%; } 100% { height: 80%; } }
+
+    @media (max-width: 991px) {
+        .expertise-section { height: auto; padding: 100px 0; }
+        .expertise-sticky { position: relative; height: auto; display: block; top: auto; overflow: visible; }
+        .expertise-bg-text { display: none; }
+        .expertise-cards-wrapper { flex-direction: column; gap: 40px; max-width: 100%; display: flex; }
+        .exp-card-wrapper { position: relative; top: auto !important; left: auto !important; right: auto !important; transform: none !important; width: 100%; opacity: 1; bottom: auto; }
+        .exp-card { width: 100%; }
+    }
     </style>
 </head>
 <body>
@@ -987,65 +1145,65 @@
         }
     </style>
 
-    <!-- Bento Grid: About -->
-    <section id="about" class="py-5 position-relative">
-        <!-- Ambient Background Blobs for Glassmorphism -->
-        <div class="ambient-blob blob-1"></div>
-        <div class="ambient-blob blob-2"></div>
-
-        <div class="container position-relative" style="z-index: 2;">
-            <div class="section-header reveal-up">
-                <h2 class="section-title">Экспертиза</h2>
-                <p class="text-secondary mb-0" style="max-width: 300px;">01 — Навыки</p>
-            </div>
-
-            <div class="bento-grid">
-                <!-- Video Section -->
-                <div class="bento-card span-video reveal-up" data-tilt data-tilt-max="5" data-tilt-speed="1000" data-tilt-perspective="2000">
-                    <div class="video-wrapper">
-                        <iframe src="https://www.youtube.com/embed/bmZ8yrXA0PQ?controls=0" title="YouTube" class="w-100 h-100" style="border:0;" allowfullscreen></iframe>
-                    </div>
-                    <div class="card-shine"></div>
-                </div>
-
-                <!-- SQL Card -->
-                <div class="bento-card span-card reveal-up" style="transition-delay: 0.1s;" data-tilt data-tilt-max="10" data-tilt-speed="1000">
-                    <div class="icon-box">
-                        <i class="fas fa-database"></i>
-                    </div>
-                    <div>
-                        <h4 class="bento-title">SQL & Данные</h4>
-                        <p class="bento-text">Сложные схемы данных и оптимизация запросов.</p>
-                    </div>
-                    <div class="card-shine"></div>
-                </div>
-
-                <!-- Backend Card -->
-                <div class="bento-card span-card reveal-up" style="transition-delay: 0.2s;" data-tilt data-tilt-max="10" data-tilt-speed="1000">
-                    <div class="icon-box">
-                        <i class="fas fa-server"></i>
-                    </div>
-                    <div>
-                        <h4 class="bento-title">Backend API</h4>
-                        <p class="bento-text">REST, микросервисы, безопасность систем.</p>
-                    </div>
-                    <div class="card-shine"></div>
-                </div>
-
-                <!-- Stack Card -->
-                <div class="bento-card span-wide reveal-up" style="transition-delay: 0.3s;" data-tilt data-tilt-max="5" data-tilt-speed="1000">
-                    <div>
-                        <h4 class="bento-title mb-4">Технологический стек</h4>
-                        <div class="d-flex flex-wrap">
-                            <span class="tech-pill">Python</span>
-                            <span class="tech-pill">Node.js</span>
-                            <span class="tech-pill">PostgreSQL</span>
-                            <span class="tech-pill">Docker</span>
-                            <span class="tech-pill">Nginx</span>
-                            <span class="tech-pill">Git</span>
+    <!-- EXPERTISE REDESIGN (Parallax Scatter) -->
+    <section id="about" class="expertise-section">
+        <div class="expertise-sticky">
+            <div class="expertise-bg-text">EXPERTISE</div>
+            
+            <div class="expertise-cards-wrapper">
+                <!-- Card 1: Architecture (Left Top) -->
+                <div class="exp-card-wrapper exp-wrap-1">
+                    <div class="exp-card" data-tilt data-tilt-max="10" data-tilt-speed="1000">
+                        <div>
+                            <div class="exp-card-icon"><i class="fas fa-cubes" style="color: var(--accent);"></i></div>
+                            <h3 class="exp-card-title">System<br>Design</h3>
+                            <p class="exp-card-desc">Проектирование отказоустойчивых распределенных систем. Микросервисы, Event Sourcing и DDD.</p>
+                        </div>
+                        <div class="exp-card-visual d-flex align-items-end justify-content-center pb-3 gap-2">
+                            <div style="width: 40px; height: 40px; border: 2px solid var(--text-secondary); border-radius: 50%;"></div>
+                            <div style="width: 2px; height: 20px; background: var(--text-secondary);"></div>
+                            <div style="width: 40px; height: 40px; border: 2px solid var(--accent); border-radius: 50%;"></div>
+                            <div style="width: 2px; height: 20px; background: var(--text-secondary);"></div>
+                            <div style="width: 40px; height: 40px; border: 2px solid var(--text-secondary); border-radius: 50%;"></div>
                         </div>
                     </div>
-                    <div class="card-shine"></div>
+                </div>
+
+                <!-- Card 2: Backend (Right Top) -->
+                <div class="exp-card-wrapper exp-wrap-2">
+                    <div class="exp-card exp-card-dark" data-tilt data-tilt-max="10" data-tilt-speed="1000">
+                        <div>
+                            <div class="exp-card-icon"><i class="fas fa-terminal" style="color: #00ff9d;"></i></div>
+                            <h3 class="exp-card-title">Backend<br>Logic</h3>
+                            <p class="exp-card-desc">Чистый код на Python/Go. Асинхронность, безопасность и максимальная производительность API.</p>
+                        </div>
+                        <div class="exp-card-visual">
+                            <div class="code-lines">
+                                def init_server():<br>
+                                &nbsp;&nbsp;app = FastAPI()<br>
+                                &nbsp;&nbsp;await db.connect()<br>
+                                &nbsp;&nbsp;return app<span class="typing-cursor"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Highload (Bottom Center) -->
+                <div class="exp-card-wrapper exp-wrap-3">
+                    <div class="exp-card exp-card-accent" data-tilt data-tilt-max="10" data-tilt-speed="1000">
+                        <div>
+                            <div class="exp-card-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            <h3 class="exp-card-title">High<br>Performance</h3>
+                            <p class="exp-card-desc">Оптимизация под высокие нагрузки. Nginx, Caching, Sharding и балансировка трафика.</p>
+                        </div>
+                        <div class="exp-card-visual d-flex align-items-end justify-content-around px-4 pb-2">
+                            <div class="graph-bar" style="height: 40%; animation-delay: 0s;"></div>
+                            <div class="graph-bar" style="height: 70%; animation-delay: 0.5s;"></div>
+                            <div class="graph-bar" style="height: 50%; animation-delay: 0.2s;"></div>
+                            <div class="graph-bar" style="height: 90%; animation-delay: 0.8s;"></div>
+                            <div class="graph-bar" style="height: 60%; animation-delay: 1.2s;"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1442,6 +1600,13 @@
         // Horizontal Scroll Elements
         const horizSection = document.querySelector('.horizontal-section');
         const horizTrack = document.querySelector('.horizontal-track');
+        
+        // Expertise Redesign Elements
+        const expSection = document.querySelector('.expertise-section');
+        const expBgText = document.querySelector('.expertise-bg-text');
+        const expWrap1 = document.querySelector('.exp-wrap-1');
+        const expWrap2 = document.querySelector('.exp-wrap-2');
+        const expWrap3 = document.querySelector('.exp-wrap-3');
 
         function raf(time) {
             lenis.raf(time);
@@ -1454,6 +1619,52 @@
                     img.style.transform = `translateY(${dist * 0.1}px) scale(1.05)`;
                 }
             });
+
+            // --- EXPERTISE ANIMATION ---
+            if (expSection && window.innerWidth > 991) {
+                const rect = expSection.getBoundingClientRect();
+                const sectionTop = rect.top;
+                const height = rect.height - window.innerHeight;
+                let progress = -sectionTop / height;
+                progress = Math.max(0, Math.min(1, progress));
+                
+                // Animation Keyframes based on progress (0 to 1)
+                
+                // Background Text: Scale Down & Move
+                if(expBgText) {
+                    // Start huge, shrink to normal
+                    const scale = 1.5 - (progress * 0.5); // 1.5 -> 1.0
+                    const yPos = progress * 100; 
+                    const opacity = Math.min(1, progress * 2); // Fade in
+                    expBgText.style.transform = `translate(-50%, calc(-50% + ${yPos}px)) scale(${scale})`;
+                    expBgText.style.opacity = 0.1 + (progress * 0.5);
+                    expBgText.style.letterSpacing = `${-10 + (progress * 10)}px`;
+                }
+
+                // Cards Assembly
+                // Card 1 (Left): Comes from bottom-left
+                if(expWrap1) {
+                    const y = (1 - progress) * 600;
+                    const r = (1 - progress) * -15;
+                    expWrap1.style.transform = `translateY(${y}px) rotate(${r}deg)`;
+                    expWrap1.style.opacity = Math.min(1, progress * 3);
+                }
+
+                // Card 2 (Right): Comes from bottom-right, delayed
+                if(expWrap2) {
+                    const y = (1 - progress) * 800; // Faster/Further start
+                    const r = (1 - progress) * 15;
+                    expWrap2.style.transform = `translateY(${y}px) rotate(${r}deg)`;
+                    expWrap2.style.opacity = Math.min(1, (progress - 0.1) * 3);
+                }
+
+                // Card 3 (Center): Comes from very bottom
+                if(expWrap3) {
+                    const y = (1 - progress) * 1000;
+                    expWrap3.style.transform = `translateX(-50%) translateY(${y}px)`; // Maintain center X
+                    expWrap3.style.opacity = Math.min(1, (progress - 0.2) * 3);
+                }
+            }
 
             // Horizontal Scroll Logic
             if (horizSection && horizTrack && window.innerWidth > 991) {
