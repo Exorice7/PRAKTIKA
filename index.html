@@ -883,10 +883,15 @@
         box-shadow: 
             0 20px 50px -10px rgba(0,0,0,0.1),
             inset 0 0 0 1px rgba(255,255,255,0.5);
-        transform-style: preserve-3d;
+        transform-style: flat; /* Убираем preserve-3d для четкого текста */
         opacity: 0; /* JS handles fade in */
         overflow: hidden;
         transition: border-color 0.3s;
+        /* Исправление размытого текста */
+        -webkit-font-smoothing: subpixel-antialiased;
+        -moz-osx-font-smoothing: auto;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
     }
     
     .monolith-card::before {
@@ -898,17 +903,14 @@
         opacity: 0.5;
     }
 
-    .monolith-card:hover {
-        border-color: var(--accent);
-    }
 
     .monolith-content {
         position: relative;
         z-index: 2;
-        transform: translateZ(20px);
         height: 100%;
         display: flex;
         flex-direction: column;
+        /* Убираем translateZ для четкого текста */
     }
 
     .mono-num {
@@ -1235,7 +1237,7 @@
                 
                 <div class="cards-orbit">
                     <!-- Card 1: System Design (Left) -->
-                    <div class="monolith-card card-1" data-tilt data-tilt-max="5" data-tilt-speed="1000" data-tilt-glare data-tilt-max-glare="0.1">
+                    <div class="monolith-card card-1">
                         <div class="monolith-content">
                             <div class="mono-num">01</div>
                             <h3 class="mono-title">Системный<br>Дизайн</h3>
@@ -1252,7 +1254,7 @@
                     </div>
 
                     <!-- Card 2: Backend Logic (Center) -->
-                    <div class="monolith-card card-2" data-tilt data-tilt-max="5" data-tilt-speed="1000" data-tilt-glare data-tilt-max-glare="0.1">
+                    <div class="monolith-card card-2">
                         <div class="monolith-content">
                             <div class="mono-num">02</div>
                             <h3 class="mono-title">Бэкенд<br>Логика</h3>
@@ -1269,7 +1271,7 @@
                     </div>
 
                     <!-- Card 3: High Load (Right) -->
-                    <div class="monolith-card card-3" data-tilt data-tilt-max="5" data-tilt-speed="1000" data-tilt-glare data-tilt-max-glare="0.1">
+                    <div class="monolith-card card-3">
                         <div class="monolith-content">
                             <div class="mono-num">03</div>
                             <h3 class="mono-title">Высокие<br>Нагрузки</h3>
@@ -1627,8 +1629,6 @@
 
     <!-- Lenis -->
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
-    <!-- Vanilla Tilt -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -1689,22 +1689,6 @@
         const card2 = document.querySelector('.card-2');
         const card3 = document.querySelector('.card-3');
 
-        // Mouse Parallax for Expertise Stage
-        let mouseX = 0, mouseY = 0;
-        let targetRotateX = 0, targetRotateY = 0;
-        let currentRotateX = 0, currentRotateY = 0;
-
-        window.addEventListener('mousemove', (e) => {
-            if(window.innerWidth > 991) {
-                // Normalized -1 to 1
-                const nx = (e.clientX / window.innerWidth) * 2 - 1;
-                const ny = (e.clientY / window.innerHeight) * 2 - 1;
-                
-                // Max rotation deg
-                targetRotateY = nx * 5; 
-                targetRotateX = -ny * 5;
-            }
-        });
 
         function raf(time) {
             lenis.raf(time);
@@ -1725,22 +1709,14 @@
                 const height = rect.height - window.innerHeight;
                 let progress = -sectionTop / height;
                 progress = Math.max(0, Math.min(1, progress));
-                
-                // Smooth mouse interaction
-                currentRotateX += (targetRotateX - currentRotateX) * 0.05;
-                currentRotateY += (targetRotateY - currentRotateY) * 0.05;
 
-                // Base Stage Transform + Scroll Rotation
+                // Base Stage Transform + Scroll Rotation (только скролл, без мыши)
                 // Scroll rotates the whole stage from slightly left to center
                 const stageRotateY = (1 - progress) * 20; // 20deg -> 0deg
                 const stageZ = (progress * 200) - 100; // Move slightly closer
                 
                 if(expStage) {
-                    expStage.style.transform = `
-                        rotateX(${currentRotateX}deg) 
-                        rotateY(${currentRotateY + stageRotateY}deg)
-                        translateZ(${stageZ}px)
-                    `;
+                    expStage.style.transform = `rotateY(${stageRotateY}deg) translateZ(${stageZ}px)`;
                 }
 
                 // 1. Background Title
@@ -1946,5 +1922,4 @@
         }
     </script>
 </body>
-</html>
 </html>
