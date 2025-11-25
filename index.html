@@ -1548,6 +1548,123 @@
         @media(max-width: 768px) {
             .process-item:hover .process-body { height: 200px; }
         }
+
+        /* --- Video Showcase --- */
+        .video-showcase {
+            position: relative;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 
+                0 50px 100px -30px rgba(44, 36, 31, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .video-showcase-inner {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background: var(--text-primary);
+        }
+
+        .video-showcase video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: contrast(1.05) saturate(1.1);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s;
+        }
+
+        .video-showcase:hover video {
+            transform: scale(1.03);
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                180deg,
+                transparent 0%,
+                transparent 60%,
+                rgba(44, 36, 31, 0.8) 100%
+            );
+            pointer-events: none;
+            display: flex;
+            align-items: flex-end;
+            padding: 40px;
+        }
+
+        .video-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .video-badge i {
+            font-size: 0.7rem;
+        }
+
+        /* Decorative corners */
+        .video-showcase::before,
+        .video-showcase::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--accent);
+            z-index: 10;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s, transform 0.4s;
+        }
+
+        .video-showcase::before {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+            transform: translate(-10px, -10px);
+        }
+
+        .video-showcase::after {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
+            transform: translate(10px, 10px);
+        }
+
+        .video-showcase:hover::before,
+        .video-showcase:hover::after {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+
+        @media (max-width: 768px) {
+            .video-showcase {
+                border-radius: 20px;
+            }
+            .video-overlay {
+                padding: 20px;
+            }
+            .video-badge {
+                font-size: 0.75rem;
+                padding: 10px 18px;
+            }
+        }
     </style>
 
     <!-- Gallery -->
@@ -1555,6 +1672,22 @@
         <div class="container">
             <h2 class="section-title mb-5 text-center reveal-up">Визуализация</h2>
         </div>
+        
+        <!-- Featured Video Showcase -->
+        <div class="container mb-5">
+            <div class="video-showcase reveal-up">
+                <div class="video-showcase-inner">
+                    <video autoplay muted loop playsinline>
+                        <source src="images/video.mp4" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                    <div class="video-overlay">
+                        <span class="video-badge"><i class="fas fa-play"></i> Showreel</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="container-fluid p-0">
             <div class="gallery-grid px-4">
                 <div class="gallery-card reveal-up"><img src="images/Галерея.png" alt="Gallery" class="parallax-img"></div>
