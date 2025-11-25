@@ -647,6 +647,80 @@
             letter-spacing: 1px;
         }
 
+        /* --- CSS AWARDS STYLE BUTTON --- */
+        .btn-award {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 35px;
+            border-radius: 100px; /* Pill shape */
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            border: 1px solid currentColor; /* Обводка цветом текста */
+            background: transparent;
+        }
+
+        .btn-award span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-award i {
+            position: relative;
+            z-index: 2;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 1.1em;
+        }
+
+        /* Hover Effects General */
+        .btn-award:hover {
+            transform: translateY(-3px); /* Небольшой подъем */
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3); /* Мягкая тень */
+        }
+
+        .btn-award:hover i {
+            transform: translateX(8px); /* Стрелка уезжает вправо */
+        }
+
+        /* --- Адаптация под темы карточек --- */
+
+        /* Темы Dark и Accent (Белые кнопки) */
+        [data-theme="dark"] .btn-award,
+        [data-theme="accent"] .btn-award {
+            color: #fff;
+        }
+
+        [data-theme="dark"] .btn-award:hover,
+        [data-theme="accent"] .btn-award:hover {
+            background: #fff;
+            color: var(--text-primary) !important; /* Текст становится темным на белом фоне */
+            border-color: transparent;
+        }
+
+        /* Тема Light (Темная кнопка) */
+        [data-theme="light"] .btn-award {
+            color: var(--text-primary);
+            border-color: rgba(44, 36, 31, 0.2); /* Более мягкая обводка */
+        }
+
+        [data-theme="light"] .btn-award:hover {
+            background: var(--text-primary);
+            color: var(--bg-main) !important; /* Текст становится светлым на темном фоне */
+            border-color: transparent;
+        }
+
+        /* Убираем старый стиль, если он где-то остался */
+        .btn-link-custom {
+            display: none;
+        }
+
         /* Адаптация footer для экранов с меньшей высотой (MacBook 16:10 и подобные) */
         @media (max-height: 950px) {
             .contact-title {
@@ -1436,7 +1510,10 @@
                             <span class="tech-pill">PostgreSQL</span>
                             <span class="tech-pill">Оптимизация SQL</span>
                         </div>
-                        <a href="#" class="btn-link-custom text-white border-white">Подробнее</a>
+                        <a href="#" class="btn-award">
+                            <span>Подробнее</span>
+                            <i class="fa-solid fa-arrow-right-long"></i>
+                        </a>
                         <div class="horiz-num">01</div>
                     </div>
                     <div class="horiz-card-visual">
@@ -1457,7 +1534,10 @@
                             <span class="tech-pill">Aiogram</span>
                             <span class="tech-pill">Redis</span>
                         </div>
-                        <a href="#" class="btn-link-custom text-white border-white">Подробнее</a>
+                        <a href="#" class="btn-award">
+                            <span>Подробнее</span>
+                            <i class="fa-solid fa-arrow-right-long"></i>
+                        </a>
                         <div class="horiz-num">02</div>
                     </div>
                     <div class="horiz-card-visual">
@@ -1478,7 +1558,10 @@
                             <span class="tech-pill">React</span>
                             <span class="tech-pill">Docker</span>
                         </div>
-                        <a href="#" class="btn-link-custom">Подробнее</a>
+                        <a href="#" class="btn-award">
+                            <span>Подробнее</span>
+                            <i class="fa-solid fa-arrow-right-long"></i>
+                        </a>
                         <div class="horiz-num">03</div>
                     </div>
                     <div class="horiz-card-visual">
@@ -2139,7 +2222,8 @@
         });
 
         // --- 7. Magnetic Buttons ---
-        const magneticBtns = document.querySelectorAll('.btn-glow, .btn-outline-custom, .nav-link');
+        // Добавили .btn-award в список
+        const magneticBtns = document.querySelectorAll('.btn-glow, .btn-outline-custom, .nav-link, .btn-award');
         
         magneticBtns.forEach(btn => {
             btn.addEventListener('mousemove', (e) => {
