@@ -529,6 +529,44 @@
             font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 600;
         }
 
+        /* --- Success Animation (Droplet) --- */
+        .btn-glow {
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-glow.success-morph {
+            width: 60px !important;
+            padding: 0 !important;
+            color: transparent !important;
+            background: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .btn-glow.success-morph span { opacity: 0; }
+        
+        .btn-glow.falling {
+            animation: droplet-fall 0.6s forwards cubic-bezier(0.6, 0, 0.4, 1);
+        }
+        
+        @keyframes droplet-fall {
+            0% { transform: translateY(0) scale(1); border-radius: 50%; }
+            50% { transform: translateY(40px) scale(0.8, 1.2); border-radius: 50% 50% 40% 40%; }
+            100% { transform: translateY(100px) scale(0); opacity: 0; }
+        }
+
+        .success-splash {
+            text-align: left; /* Align with form */
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .success-splash.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
         /* --- FOOTER / CONTACT --- */
         footer {
             padding: 100px 0 50px;
@@ -2153,10 +2191,52 @@
 
                     if (error) throw error;
 
-                    // Success
-                    formResponse.textContent = "✅ Заявка отправлена! Данные сохранены в базу.";
-                    formResponse.style.color = "#2C241F";
-                    contactForm.reset();
+                    // Success Animation Sequence
+                    const btn = contactForm.querySelector('button[type="submit"]');
+                    const btnWidth = btn.offsetWidth;
+                    const targetWidth = 60;
+                    const offset = (btnWidth - targetWidth) / 2;
+                    
+                    // 1. Prepare for morph (Center the droplet)
+                    btn.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                    btn.style.width = `${btnWidth}px`; // Lock width
+                    
+                    // Force reflow
+                    btn.offsetHeight;
+                    
+                    // 2. Start Morph
+                    btn.classList.add('success-morph');
+                    btn.style.width = '60px';
+                    btn.style.marginLeft = `${offset}px`; // Center it
+                    
+                    // 3. Fall
+                    setTimeout(() => {
+                        btn.classList.add('falling');
+                        
+                        // 4. Splash Text
+                        setTimeout(() => {
+                            btn.style.display = 'none'; // Remove button
+                            
+                            formResponse.innerHTML = `
+                                <div class="success-splash">
+                                    <div style="font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--text-primary); margin-bottom: 5px; display: flex; align-items: center; gap: 10px;">
+                                        <i class="fas fa-check-circle" style="color: var(--accent);"></i>
+                                        Заявка отправлена!
+                                    </div>
+                                    <div style="color: var(--text-secondary); padding-left: 34px;">Данные сохранены в базу.</div>
+                                </div>
+                            `;
+                            
+                            // Trigger reflow for transition
+                            formResponse.offsetHeight;
+                            
+                            const splash = formResponse.querySelector('.success-splash');
+                            if(splash) splash.classList.add('active');
+                            
+                            formResponse.style.opacity = '1';
+                            contactForm.reset();
+                        }, 500); // Wait for fall
+                    }, 600); // Wait for morph
 
                 } catch (error) {
                     console.error('Supabase Error:', error);
