@@ -568,6 +568,12 @@
         }
 
         /* --- FOOTER / CONTACT --- */
+        .footer-content-wrapper {
+            will-change: transform;
+            /* Убедимся, что трансформация происходит от центра/низа, хотя для translate это не критично */
+            transform-origin: center bottom; 
+        }
+
         footer {
             padding: 0; /* Reset padding, controlled by flex centering */
             border-top: 2px solid var(--text-primary);
@@ -1919,7 +1925,7 @@
 
     <!-- FOOTER (CONTACT) -->
     <footer id="contact">
-        <div class="container">
+        <div class="container footer-content-wrapper">
             <div class="section-header reveal-up" style="border-top: none;">
                 <span class="text-uppercase text-secondary" style="letter-spacing: 2px;">03 — Контакты</span>
             </div>
@@ -2158,6 +2164,39 @@
                 if (maxTranslate > 0) {
                      const translateX = progress * maxTranslate;
                      horizTrack.style.transform = `translateX(-${translateX}px)`;
+                }
+            }
+
+            // --- 4. НОВЫЙ КОД: FOOTER PARALLAX ---
+            const footer = document.querySelector('footer');
+            const footerContent = document.querySelector('.footer-content-wrapper');
+            
+            if (footer && footerContent) {
+                // Проверяем, работает ли sticky эффект (position: fixed)
+                const isFixed = window.getComputedStyle(footer).position === 'fixed';
+                
+                if (isFixed) {
+                    // Считаем расстояние от низа страницы до низа вьюпорта
+                    // scrollHeight - высота всей страницы
+                    // window.scrollY + window.innerHeight - где мы сейчас
+                    const distanceToBottom = document.documentElement.scrollHeight - window.scrollY - window.innerHeight;
+                    const footerHeight = footer.offsetHeight;
+
+                    // Если мы в зоне действия футера (начинаем его видеть)
+                    if (distanceToBottom < footerHeight) {
+                        // PARALLAX FACTOR: 0.5 означает, что контент движется в 2 раза медленнее скролла
+                        // Чем больше число, тем сильнее контент "уезжает" вниз при скролле вверх
+                        const parallaxY = distanceToBottom * 0.5; 
+                        
+                        // Применяем смещение
+                        footerContent.style.transform = `translateY(${parallaxY}px)`;
+                        // Опционально: добавляем легкий scale для кинематографичности
+                        // const scale = 0.95 + (1 - (distanceToBottom / footerHeight)) * 0.05;
+                        // footerContent.style.transform = `translateY(${parallaxY}px) scale(${scale})`;
+                    }
+                } else {
+                    // Сброс для мобильных/маленьких экранов
+                    footerContent.style.transform = 'none';
                 }
             }
 

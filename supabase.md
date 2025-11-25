@@ -59,9 +59,5 @@ async function submitForm(name, email, message) {
 Dashboard: https://supabase.com/dashboard/project/fsovbwvbhwcdqebbxwdn
 API Settings: https://supabase.com/dashboard/project/fsovbwvbhwcdqebbxwdn/settings/api
 
-ВАЖНО:
-------
-⚠️ Храните пароль БД в безопасном месте
-⚠️ Anon key безопасен для использования в браузере
-⚠️ Не делитесь service_role ключом публично
-===============================================
+
+ВОТ- GOOGLE CLOUD СТРАНИЦЫ ДЕПЛОЯ- https://console.cloud.google.com/storage/browser/prytkov-portfolio-2025-v1;tab=objects?project=gen-lang-client-0468820155&prefix=&forceOnObjectsSortingFiltering=false
